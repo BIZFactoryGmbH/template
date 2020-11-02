@@ -1,10 +1,10 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.contrib.auth.views import LogoutView
 from django.views.generic import TemplateView
 
-from {{ project_name }}.apps.user.views import (
-    Login, Register, ProfileView, confirm_register, PasswordForgot, PasswordReset
-)
+from authn.apps.user.views import (
+    Login, Register, ProfileView, confirm_register, PasswordForgot, PasswordReset,
+    TOTPVerifyView, TOTPCreateView)
 
 
 urlpatterns = [
@@ -26,4 +26,6 @@ urlpatterns = [
 
     path('password_forgot/reset/<str:onetime_hash>/', PasswordReset.as_view(), name='password_reset'),
 
+re_path(r'^totp/create/$',TOTPCreateView.as_view(), name='totp-create'),
+    re_path(r'^totp/login/(?P<token>[0-9]{6})/$', TOTPVerifyView.as_view(), name='totp-login'),
 ]

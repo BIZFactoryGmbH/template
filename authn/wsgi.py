@@ -15,6 +15,6 @@ from load_env import read_env
 
 read_env()
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{{ project_name }}.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "authn.settings")
 
 application = get_wsgi_application()

@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | authn Administration{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">authn Administration</a> &nbsp;
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

@@ -9,7 +9,7 @@ def send_email_in_template(subject, receiver, template_name, **data):
     msg = EmailMultiAlternatives(
         subject,
         text_content,
-        '{{ project_name }} <info@{{ project_name }}.com>', [receiver]
+        'authn <info@authn.com>', [receiver]
     )
     msg.attach_alternative(html_content, "text/html")
     msg.send()

@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class UserConfig(AppConfig):
-    name = '{{ project_name }}.apps.user'
+    name = 'authn.apps.user'

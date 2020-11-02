@@ -4,10 +4,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
 from django.utils import timezone
+from rest_framework import views, permissions, status
+from rest_framework.response import Response
 
 from .forms import LoginForm, RegisterForm
-from {{ project_name }}.apps.core.utils import send_email_in_template
-from {{ project_name }}.apps.core.models import create_default_hash
+from authn.apps.core.utils import send_email_in_template
+from authn.apps.core.models import create_default_hash
 from .models import Profile
 
 
@@ -94,11 +96,11 @@ class Register(FormView):
             )
 
             send_email_in_template(
-                'Your registration in {{ project_name }}.com',
+                'Your registration in authn.com',
                 email,
                 'email/template.html',
                 **{
-                    'text': "Thanks for registering on {{ project_name }}.com. Please confirm your registration by clicking on "
+                    'text': "Thanks for registering on authn.com. Please confirm your registration by clicking on "
                             "the link below.",
                     'link': confirm_link,
                     'link_name': 'Confirm'
@@ -222,3 +224,38 @@ class PasswordReset(FormView):
         login(request, user)
 
         return redirect('%s?password_changed=1' % reverse('profile'))
+
+
+def get_user_totp_device(self, user, confirmed=None):
+    devices = devices_for_user(user, confirmed=confirmed)
+    for device in devices:
+        if isinstance(device, TOTPDevice):
+            return device
+
+class TOTPCreateView(views.APIView):
+    """
+    Use this endpoint to set up a new TOTP device
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, format=None):
+        user = request.user
+        device = get_user_totp_device(self, user)
+        if not device:
+            device = user.totpdevice_set.create(confirmed=False)
+        url = device.config_url
+        return Response(url, status=status.HTTP_201_CREATED)
+
+class TOTPVerifyView(views.APIView):
+    """
+    Use this endpoint to verify/enable a TOTP device
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, token, format=None):
+        user = request.user
+        device = get_user_totp_device(self, user)
+        if not device == None and device.verify_token(token):
+            if not device.confirmed:
+                device.confirmed = True
+                device.save()
+            return Response(True, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
