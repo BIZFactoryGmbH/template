@@ -99,9 +99,9 @@ WSGI_APPLICATION = 'authn.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME', 'test_auth'),
-        'USER': os.environ.get('DB_USER', 'megov'),
-        'PASSWORD': os.environ.get('DB_PWD', 'hex5mex'),
+        'NAME': os.environ.get('DB_NAME', 'dbname'),
+        'USER': os.environ.get('DB_USER', 'dbuser'),
+        'PASSWORD': os.environ.get('DB_PWD', 'dbpassword'),
         'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
         'PORT': os.environ.get('DB_PORT', 5432),
     }
